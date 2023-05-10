@@ -62,5 +62,14 @@ class Perso extends Sprite {
     public manger(){
         if(this.scene_.pastilles_[this.ligne_][this.colonne_] != null) this.scene_.detruirePastille(this.ligne_, this.colonne_);
     }
+
+    public bernouilli(level : number){
+        let rand : number = Math.random();
+        if(rand < level){
+            return true;
+        }else{
+            return false;
+        }
+    }
     
 }
