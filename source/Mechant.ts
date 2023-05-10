@@ -14,8 +14,14 @@ class Mechant extends Perso{
     //méthode de déplacement automatique du méchant avec sélection de la bonne image en fonction du déplacement
     public bouger(){
         let n : number = Math.random();
-        //cas 1/3 du temps où méchant se dirige vers perso
-         if(n<0.3){
+
+         //augmentation de la difficulté au fur et à mesure du jeu en fonction du score
+         if(this.scene_.scoreNb_>10){
+            this.scene_.chance_+=0.05;
+         }
+        
+        //cas où méchant se dirige vers perso
+         if(this.bernouilli(this.scene_.chance_)){
             if(this.scene_.perso_.colonne_<this.colonne_){
                this.gauche();
                this.setImage("mechantg.png", this.scene_.pas_+1, this.scene_.pas_+1)
@@ -24,11 +30,7 @@ class Mechant extends Perso{
                this.droite();
                this.setImage("mechantd.png", this.scene_.pas_+1, this.scene_.pas_+1)
             }
-         }
-         //reste du temps où méchant fait déplacement aléatoire
-         
-         else if(n<0.6){
-            if(this.scene_.perso_.ligne_<this.ligne_){
+            else if(this.scene_.perso_.ligne_<this.ligne_){
                this.haut();
                this.setImage("mechanth.png", this.scene_.pas_+1, this.scene_.pas_+1)
             }
@@ -37,6 +39,7 @@ class Mechant extends Perso{
                this.setImage("mechantb.png", this.scene_.pas_+1, this.scene_.pas_+1)
             }
          }
+         //cas où méchant fait déplacement aléatoire
          else if(n<0.7){
             this.setImage("mechantg.png", this.scene_.pas_+1, this.scene_.pas_+1)
             this.gauche();
