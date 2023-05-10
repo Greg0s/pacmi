@@ -15,6 +15,8 @@ class Scene extends Sprite {
  public score_ : Sprite;
  public mechants_ : Array<Array<Mechant>>;
  public murs_ : Array<Array<Sprite>>;
+ public scoreNb_ : number;
+ public chance_ : number;
 
  //-------------------------------------------------------------------------------------Constructeur
  public constructor(balise : HTMLElement) {
@@ -22,6 +24,7 @@ class Scene extends Sprite {
   this.setDimension(320,320);
   this.setX((window.innerWidth - this.getLargeur()) / 2);
   this.setY((window.innerHeight - this.getHauteur()) / 2);
+  this.chance_ = 0.3;
  }
 
  //-----------------------------------------------------------------------------------------demarrer
@@ -56,6 +59,7 @@ class Scene extends Sprite {
 
   //Question 1b
   this.pas_ = 32;
+  this.scoreNb_=0;
   this.nbPastille_ = 0;
 
   //Tableau des méchants pour permettre leur suppression dans arreter()
@@ -169,7 +173,7 @@ class Scene extends Sprite {
   //affichage du score
   
   this.score_ = new Sprite(document.createElement("div"));
-  this.score_.getBalise().innerHTML = "Score = "+this.nbPastille_;
+  this.score_.getBalise().innerHTML = "Score = "+this.scoreNb_;
   this.score_.getBalise().id="score";
   this.ajouter(this.score_);
   this.score_.setXY(0,-40);
@@ -185,7 +189,9 @@ class Scene extends Sprite {
    this.retirer(this.pastilles_[i][j]);
    this.pastilles_[i][j]=null;
    this.nbPastille_--;
-   this.score_.getBalise().innerHTML = "Score = "+this.nbPastille_;
+   this.scoreNb_++
+   this.score_.getBalise().innerHTML = "Score = "+this.scoreNb_;
+   
   }
 
  //------------------------------------------------------------------------------------------arreter
