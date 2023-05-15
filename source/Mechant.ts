@@ -7,6 +7,34 @@ class Mechant extends Perso{
         super(balise, scene, ligne, colonne);
     }
 
+   public bernouilli(level : number){
+      let rand : number = Math.random();
+      if(rand < level){
+          return true;
+      }else{
+          return false;
+      }
+   }
+
+   public binomiale(times : number, chances : number, nbToWin : number){
+      let count = 0;
+      for(let i = 0 ; i < times ; i++){
+          if (this.bernouilli(chances)){(count++)};
+      }
+      if(count >= nbToWin){return true;}else{return false;};
+   }
+
+   public loiBeta(a, b){
+      let u = Math.random();
+      let v = Math.random();
+      while(Math.pow(u, 1/a), Math.pow(v, 1/b) > 1){
+         u = Math.random();
+         v = Math.random();
+      }
+      let res = (Math.pow(u, 1/a))/(Math.pow(u, 1/a) + Math.pow(v, 1/b));
+      return res;
+   }
+
     //méthode manger héritée de la classe perso
     public manger(){
     }
