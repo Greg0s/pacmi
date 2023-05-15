@@ -17,6 +17,8 @@ class Scene extends Sprite {
  public murs_ : Array<Array<Sprite>>;
  public scoreNb_ : number;
  public chance_ : number;
+ public items_ : Array<Array<Sprite>>;
+ public nbItems_ : number;
 
  //-------------------------------------------------------------------------------------Constructeur
  public constructor(balise : HTMLElement) {
@@ -31,17 +33,19 @@ class Scene extends Sprite {
  public demarrer() {
   /* Code qui demarre la scene. */
   //Question 1a - Tableau présentant la future architecture de la carte du jeu
+
+  //this.randomAssets();
   this.lab_ = new Array<Array<number>>();
 
   this.lab_[0] = new Array<number>(1,1,1,1,1,1,1,1,1,1);
   this.lab_[1] = new Array<number>(1,2,8,0,1,1,1,2,0,1);
   this.lab_[2] = new Array<number>(1,0,1,0,9,1,1,1,0,1);
-  this.lab_[3] = new Array<number>(1,0,1,0,1,1,0,0,0,1);
+  this.lab_[3] = new Array<number>(1,0,1,0,1,1,3,0,0,1);
   this.lab_[4] = new Array<number>(1,0,1,0,0,0,0,1,0,0);
   this.lab_[5] = new Array<number>(1,0,1,0,1,0,0,1,0,1);
   this.lab_[6] = new Array<number>(1,2,0,0,1,1,0,0,0,1);
   this.lab_[7] = new Array<number>(1,0,1,0,0,1,1,0,1,1);
-  this.lab_[8] = new Array<number>(1,0,1,1,2,0,0,10,9,1);
+  this.lab_[8] = new Array<number>(1,0,1,1,2,0,3,10,9,1);
   this.lab_[9] = new Array<number>(1,1,1,1,1,1,1,1,1,1);
   
   //tableau des pastilles
@@ -57,7 +61,6 @@ class Scene extends Sprite {
   this.pastilles_[8] = new Array<Sprite>(null,null,null,null,null,null,null,null,null,null);
   this.pastilles_[9] = new Array<Sprite>(null,null,null,null,null,null,null,null,null,null);
 
-  //Question 1b
   this.pas_ = 32;
   this.scoreNb_=0;
   this.nbPastille_ = 0;
@@ -87,6 +90,19 @@ class Scene extends Sprite {
   this.murs_[7] = new Array<Sprite>(null,null,null,null,null,null,null,null,null,null);
   this.murs_[8] = new Array<Sprite>(null,null,null,null,null,null,null,null,null,null);
   this.murs_[9] = new Array<Sprite>(null,null,null,null,null,null,null,null,null,null);
+
+  //Tableau des items
+  this.items_ = new Array<Array<Sprite>>();
+  this.items_[0] = new Array<Sprite>(null,null,null,null,null,null,null,null,null,null);
+  this.items_[1] = new Array<Sprite>(null,null,null,null,null,null,null,null,null,null);
+  this.items_[2] = new Array<Sprite>(null,null,null,null,null,null,null,null,null,null);
+  this.items_[3] = new Array<Sprite>(null,null,null,null,null,null,null,null,null,null);
+  this.items_[4] = new Array<Sprite>(null,null,null,null,null,null,null,null,null,null);
+  this.items_[5] = new Array<Sprite>(null,null,null,null,null,null,null,null,null,null);
+  this.items_[6] = new Array<Sprite>(null,null,null,null,null,null,null,null,null,null);
+  this.items_[7] = new Array<Sprite>(null,null,null,null,null,null,null,null,null,null);
+  this.items_[8] = new Array<Sprite>(null,null,null,null,null,null,null,null,null,null);
+  this.items_[9] = new Array<Sprite>(null,null,null,null,null,null,null,null,null,null);
 
 
   //Parcours du tableau de mise en place
@@ -130,6 +146,13 @@ class Scene extends Sprite {
             //Appel de l'action bouger et tuer 5 fois par seconde et stockage de l'id de l'intervalle
             m.timerBouger_= setInterval(() => {m.bouger();},1000/5);
             m.timerTuer_ = setInterval(() => {m.tuer();},1000/5);
+          }else if(this.lab_[i][j]==3){//item
+            let p : Sprite = new Sprite(document.createElement("img"));
+            p.setImage("potion.png",this.pas_+1,this.pas_+1)
+            p.setXY(j*this.pas_,i*this.pas_);
+            p.getBalise().style.zIndex="0";
+            this.ajouter(p);
+            this.items_[i][j]=p;
           }
       }
   }
@@ -183,7 +206,33 @@ class Scene extends Sprite {
 
   //-----------------------------------------------------------------------------------------méthodes
 
-  //méthode quand une pastille est mangée
+  //méthode pour génération aléatoire de la map
+
+  // public randomAssets(){
+  //   for(let i : number = 0; i<this.lab_.length;i++){
+  //     for(let j : number = 0; j<this.lab_[i].length;j++){
+        
+  //       //this.lab_[i][j] = 
+  //     }
+  //   }
+  // }
+
+  //loi uniforme (continue) : retourne un entier entre 0 et max
+  public uniforme(max){
+    return Math.floor(Math.random() * max);
+  }
+
+  public bernouilli(level : number){
+    let rand : number = Math.random();
+    if(rand < level){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+
+
   
   public detruirePastille(i: number, j : number){
    this.retirer(this.pastilles_[i][j]);
