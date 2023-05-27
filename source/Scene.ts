@@ -18,6 +18,13 @@ class Scene extends Sprite {
  public nbMechants_ : number;
  public timerInv_ : number;
  public inv_ : string;
+ public red_ : number;
+ public green_ : number;
+ public blue_ : number;
+ public addRed_ : boolean;
+ public addGreen_ : boolean;
+ public addBlue_ : boolean;
+
 
  //-------------------------------------------------------------------------------------Constructeur
  public constructor(balise : HTMLElement) {
@@ -31,6 +38,12 @@ class Scene extends Sprite {
   // Détermination du nb d'ennemis entre 2 et 3
   this.nbMechants_ = 2 + this.uniforme(2);
   this.inv_ = '';
+  this.red_ = 0;
+  this.green_ = 157;
+  this.blue_ = 255;
+  this.addRed_ = true;
+  this.addGreen_ = true;
+  this.addBlue_ = true;
  }
 
   //-----------------------------------------------------------------------------------------lois
@@ -83,17 +96,28 @@ public loiExpo(lambda : number) {
   return -Math.log(1 - Math.random()) / lambda;
 }
 
+public loiPoisson(lambda : number) {
+  const L = Math.exp(-lambda);
+  let k = 0;
+  let p = 1;
+  do {
+    k++;
+    p *= Math.random();
+  } while (p > L);
+  return k - 1;
+}
 
   //-----------------------------------------------------------------------------------------demarrer
  public demarrer() {
   document.getElementById("play").style.display = "none";
 
+
   this.lab_ = new Array<Array<number>>();
 
   // 0 = void | 1 = mur | 2 = pastilles | 3 = items | 8 = pacman | 10 = méchant 
   this.lab_[0] = new Array<number>(1,1,1,1,1,1,1,1,1,1);
-  this.lab_[1] = new Array<number>(1,2,8,2,1,1,1,2,10,1);
-  this.lab_[2] = new Array<number>(1,2,1,2,2,1,1,1,3,1);
+  this.lab_[1] = new Array<number>(1,2,8,2,1,1,2,2,10,1);
+  this.lab_[2] = new Array<number>(1,2,1,2,2,1,2,1,3,1);
   this.lab_[3] = new Array<number>(1,2,1,2,1,1,3,2,2,1);
   this.lab_[4] = new Array<number>(1,2,1,2,2,2,2,1,2,2);
   this.lab_[5] = new Array<number>(1,2,1,2,1,3,2,1,2,1);
@@ -169,7 +193,7 @@ public loiExpo(lambda : number) {
           //Mise en place du mur
           if(this.lab_[i][j]==1){
             let m : Sprite = new Sprite(document.createElement("img"));
-            m.setImage("../www/assets/img/mur.png",this.pas_+1,this.pas_+1)
+            m.setImage("../www/assets/img/brick.png",this.pas_+1,this.pas_+1)
             this.murs_[i][j]=m;
             this.ajouter(m);
             m.setXY(j*this.pas_,i*this.pas_);
@@ -225,13 +249,67 @@ public loiExpo(lambda : number) {
             }
           }
       }
-      this.timerInv_ = setInterval(() => {
-        if(this.perso_.invincible_ == true){
-          this.inv_ = 'i';
-        }
-      },1000/5);
-
   }
+
+  // loops
+  // skin perso invincible
+  this.timerInv_ = setInterval(() => {
+    if(this.perso_.invincible_ == true){
+      this.inv_ = 'i';
+    }
+  },1000/5);
+
+  let minRed : number;
+  let maxRed : number;
+  let maxBlue : number;
+  let maxGreen : number;
+  
+  setInterval(() => {
+
+    if(this.nbPastille_ >= 15){
+      minRed = 10;
+      maxRed = 150;
+      maxBlue = 250;
+      maxGreen = 250;
+    }else if(this.nbPastille_ < 15){
+      minRed = 125;
+      maxRed = 250;
+      maxBlue = 150;
+      maxGreen = 150;
+    }else if(this.nbPastille_ < 7){
+      minRed = 230;
+      maxBlue = 50;
+      maxGreen = 50;
+    }
+
+    if(this.red_ > maxRed) this.addRed_ = false;
+    else if(this.red_ < minRed) this.addRed_ = true;
+    if(this.blue_ > maxBlue) this.addBlue_ = false;
+    else if(this.blue_ <10) this.addBlue_ = true;
+    if(this.green_ > maxGreen) this.addGreen_ = false;
+    else if(this.green_ <10) this.addGreen_ = true;
+
+    if(this.addRed_ == true) this.red_ +=this.loiPoisson(2.5);
+    else this.red_ -=this.loiPoisson(2.5);
+    if(this.addBlue_ == true) this.blue_ +=this.loiPoisson(2.5) 
+    else this.blue_ -=this.loiPoisson(2.5);
+    if(this.addGreen_ == true) this.green_ +=this.loiPoisson(2.5);
+    else this.green_ -=this.loiPoisson(2.5);
+    let color = 'rgb(' + this.red_ + ',' + this.green_ + ',' + this.blue_ + ')';
+    // while(red != red + this.loiExpo(0.5) * 100){
+    //   red =+ this.loiExpo(0.5) * 100;
+    // }
+    document.documentElement.style.setProperty('--color', color);
+
+    // setInterval(() => {
+    //   let red =+ this.loiExpo(0.5) * 5;
+    //   let color = 'rgb(' + red + ',' + green + ',' + blue + ')';
+    //   document.documentElement.style.setProperty('--color', color);
+    // },1000);
+    console.log(color);
+    //document.documentElement.style.setProperty('--color', color);
+    // document.getElementById('background__gradient').setAttribute("style", "background-image: linear-gradient(90deg, "+color+","+color+")");
+  },500);
 
   //réactions au touches directionnelles du clavier pour déplacer le personnage
 
