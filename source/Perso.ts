@@ -12,7 +12,7 @@ class Perso extends Sprite {
         this.ligne_ = ligne;
         this.colonne_ = colonne;
         this.mort_ = false;
-        this.invincible_ = true;
+        this.invincible_ = false;
     }
 
 
