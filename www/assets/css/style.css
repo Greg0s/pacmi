@@ -18,11 +18,10 @@ body {
 /*Style de l'affichage du score*/
 
 #score{
-
     color:  white;
     padding: 5px;
-    font-weight: bold;
     border: solid 1px white;
+    font-size: 0.8rem;
 }
 
 footer{
@@ -52,16 +51,10 @@ footer{
     left: 50%;
     transform: translate(-50%, -50%);
     font-family: 'Press Start 2P';
-
     border: 1px solid white;
     border-radius: 25px;
     cursor: pointer;
     transition: all 0.2s ease;
-}
-
-.play:hover{
-    background-color: #333333;
-    color: white;
 }
 
 .background {
