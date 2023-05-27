@@ -1,7 +1,3 @@
-//==================================================================================================
-// ANIMATION AVEC TYPESCRIPT                                                               Scene.ts
-//==================================================================================================
-
 // Classe  S c e n e //-----------------------------------------------------------------------------
 class Scene extends Sprite {
  //----------------------------------------------------------------------------------------Attributs
@@ -19,6 +15,9 @@ class Scene extends Sprite {
  public chance_ : number;
  public items_ : Array<Array<Sprite>>;
  public nbItems_ : number;
+ public nbMechants_ : number;
+ public timerInv_ : number;
+ public inv_ : string;
 
  //-------------------------------------------------------------------------------------Constructeur
  public constructor(balise : HTMLElement) {
@@ -27,25 +26,80 @@ class Scene extends Sprite {
   this.setX((window.innerWidth - this.getLargeur()) / 2);
   this.setY((window.innerHeight - this.getHauteur()) / 2);
   this.chance_ = 0.3;
+  // Détermination du nb d'items entre 2 et 5
+  this.nbItems_ =  2 + this.uniforme(4);
+  // Détermination du nb d'ennemis entre 2 et 3
+  this.nbMechants_ = 2 + this.uniforme(2);
+  this.inv_ = '';
  }
 
- //-----------------------------------------------------------------------------------------demarrer
- public demarrer() {
-  /* Code qui demarre la scene. */
-  //Question 1a - Tableau présentant la future architecture de la carte du jeu
+  //-----------------------------------------------------------------------------------------lois
+  public bernouilli(level : number){
+    let rand : number = Math.random();
+    if(rand < level){
+        return true;
+    }else{
+        return false;
+    }
+ }
 
-  //this.randomAssets();
+  //loi uniforme (continue) : retourne un entier entre 0 et max : determine le nb d'item
+  public uniforme(max : number){
+    return Math.floor(Math.random() * max);
+  }
+
+//retourne valeur entre 0 et 1
+ public loiBeta(a : number, b : number){
+  let u = Math.random();
+  let v = Math.random();
+  while(Math.pow(u, 1/a), Math.pow(v, 1/b) > 1){
+     u = Math.random();
+     v = Math.random();
+  }
+  let res = (Math.pow(u, 1/a))/(Math.pow(u, 1/a) + Math.pow(v, 1/b));
+  return res;
+}
+
+public binomiale(times : number, chances : number, nbToWin : number){
+  let count = 0;
+  for(let i = 0 ; i < times ; i++){
+      if (this.bernouilli(chances)){(count++)};
+  }
+  if(count >= nbToWin){return true;}else{return false;};
+}
+
+public loiGeometrique(p : number) {
+  if (p <= 0 || p >= 1) {
+    return "Probability (p) must be greater than 0 and less than 1.";
+  }
+  let count = 1;
+  while (this.bernouilli(p)) {
+    count++;
+  }
+  return count;
+}
+
+public loiExpo(lambda : number) {
+  return -Math.log(1 - Math.random()) / lambda;
+}
+
+
+  //-----------------------------------------------------------------------------------------demarrer
+ public demarrer() {
+  document.getElementById("play").style.display = "none";
+
   this.lab_ = new Array<Array<number>>();
 
+  // 0 = void | 1 = mur | 2 = pastilles | 3 = items | 8 = pacman | 10 = méchant 
   this.lab_[0] = new Array<number>(1,1,1,1,1,1,1,1,1,1);
-  this.lab_[1] = new Array<number>(1,2,8,0,1,1,1,2,0,1);
-  this.lab_[2] = new Array<number>(1,0,1,0,9,1,1,1,0,1);
-  this.lab_[3] = new Array<number>(1,0,1,0,1,1,3,0,0,1);
-  this.lab_[4] = new Array<number>(1,0,1,0,0,0,0,1,0,0);
-  this.lab_[5] = new Array<number>(1,0,1,0,1,0,0,1,0,1);
-  this.lab_[6] = new Array<number>(1,2,0,0,1,1,0,0,0,1);
-  this.lab_[7] = new Array<number>(1,0,1,0,0,1,1,0,1,1);
-  this.lab_[8] = new Array<number>(1,0,1,1,2,0,3,10,9,1);
+  this.lab_[1] = new Array<number>(1,2,8,2,1,1,1,2,10,1);
+  this.lab_[2] = new Array<number>(1,2,1,2,2,1,1,1,3,1);
+  this.lab_[3] = new Array<number>(1,2,1,2,1,1,3,2,2,1);
+  this.lab_[4] = new Array<number>(1,2,1,2,2,2,2,1,2,2);
+  this.lab_[5] = new Array<number>(1,2,1,2,1,3,2,1,2,1);
+  this.lab_[6] = new Array<number>(1,2,2,2,1,1,2,2,2,1);
+  this.lab_[7] = new Array<number>(1,2,1,2,10,1,1,2,1,1);
+  this.lab_[8] = new Array<number>(1,3,1,1,2,2,3,10,2,1);
   this.lab_[9] = new Array<number>(1,1,1,1,1,1,1,1,1,1);
   
   //tableau des pastilles
@@ -104,6 +158,9 @@ class Scene extends Sprite {
   this.items_[8] = new Array<Sprite>(null,null,null,null,null,null,null,null,null,null);
   this.items_[9] = new Array<Sprite>(null,null,null,null,null,null,null,null,null,null);
 
+  let cptMechant = 0;
+
+  let tempNbItems = this.nbItems_;
 
   //Parcours du tableau de mise en place
   for(let i : number = 0; i<this.lab_.length;i++){
@@ -112,7 +169,7 @@ class Scene extends Sprite {
           //Mise en place du mur
           if(this.lab_[i][j]==1){
             let m : Sprite = new Sprite(document.createElement("img"));
-            m.setImage("mur.png",this.pas_+1,this.pas_+1)
+            m.setImage("../www/assets/img/mur.png",this.pas_+1,this.pas_+1)
             this.murs_[i][j]=m;
             this.ajouter(m);
             m.setXY(j*this.pas_,i*this.pas_);
@@ -120,7 +177,7 @@ class Scene extends Sprite {
           //Mise en place du perso
           }else if(this.lab_[i][j]==8){
             this.perso_ = new Perso(document.createElement("img"), this, i, j);
-            this.perso_.setImage("perso.png",this.pas_,this.pas_);
+            this.perso_.setImage("../www/assets/img/perso.png",this.pas_+1,this.pas_+1);
             this.perso_.getBalise().style.zIndex="1";
             this.perso_.setXY(j*this.pas_,i*this.pas_);
             this.ajouter(this.perso_); 
@@ -128,33 +185,52 @@ class Scene extends Sprite {
           //Mise en place des pastilles
           }else if(this.lab_[i][j]==2){
             let p : Sprite = new Sprite(document.createElement("img"));
-            p.setImage("pastille.png",this.pas_+1,this.pas_+1)
+            p.setImage("../www/assets/img/pastille.png",this.pas_+1,this.pas_+1)
             p.setXY(j*this.pas_,i*this.pas_);
             p.getBalise().style.zIndex="0";
             this.ajouter(p);
             this.nbPastille_++;
             this.pastilles_[i][j]=p;
 
-          //Mise en place des méchants
+          //Mise en place des items
+          }else if(this.lab_[i][j]==3){
+            if(this.nbItems_ > 0){
+              let w : Sprite = new Sprite(document.createElement("img"));
+              w.setImage("../www/assets/img/item.png",this.pas_+1,this.pas_+1)
+              w.setXY(j*this.pas_,i*this.pas_);
+              this.ajouter(w);
+              this.items_[i][j]=w;
+              tempNbItems--;
+            }
+            else if(this.nbItems_ == 0){// pas d'item
+              this.lab_[i][j]=0;
+              // this.items_[i][j]=null;
+            }
+          // Mise en place des méchants
           }else if(this.lab_[i][j]==10){
-            let m : Mechant = new Mechant(document.createElement("img"),this,i,j);
-            m.setImage("mechant.png",this.pas_+1,this.pas_+1)
-            m.setXY(j*this.pas_,i*this.pas_);
-            this.ajouter(m);
-            //ajout dans le tableau méchant
-            this.mechants_[i][j]=m;
-            //Appel de l'action bouger et tuer 5 fois par seconde et stockage de l'id de l'intervalle
-            m.timerBouger_= setInterval(() => {m.bouger();},1000/5);
-            m.timerTuer_ = setInterval(() => {m.tuer();},1000/5);
-          }else if(this.lab_[i][j]==3){//item
-            let p : Sprite = new Sprite(document.createElement("img"));
-            p.setImage("potion.png",this.pas_+1,this.pas_+1)
-            p.setXY(j*this.pas_,i*this.pas_);
-            p.getBalise().style.zIndex="0";
-            this.ajouter(p);
-            this.items_[i][j]=p;
+            if(cptMechant < this.nbMechants_){
+              cptMechant++;
+              let m : Mechant = new Mechant(document.createElement("img"),this,i,j, cptMechant);
+              m.setImage("../www/assets/img/mechant.png",this.pas_+1,this.pas_+1)
+              m.setXY(j*this.pas_,i*this.pas_);
+              m.getBalise().style.zIndex="1";
+              this.ajouter(m);
+              //ajout dans le tableau méchant
+              this.mechants_[i][j]=m;
+              //Appel de l'action bouger et tuer 5 fois par seconde et stockage de l'id de l'intervalle
+              m.timerBouger_= setInterval(() => {m.bouger();},1000/3);
+              m.timerTuer_ = setInterval(() => {m.tuer();},1000/3);
+            }else{
+              this.lab_[i][j]=0;
+            }
           }
       }
+      this.timerInv_ = setInterval(() => {
+        if(this.perso_.invincible_ == true){
+          this.inv_ = 'i';
+        }
+      },1000/5);
+
   }
 
   //réactions au touches directionnelles du clavier pour déplacer le personnage
@@ -164,22 +240,22 @@ class Scene extends Sprite {
     if(!this.perso_.estArrive() && !this.perso_.mort_){
       //cas flèche gauche
       if(e.key=="ArrowLeft"){
-          this.perso_.setImage('persog.png', this.pas_+1,this.pas_+1);
+          this.perso_.setImage('../www/assets/img/persog' + this.inv_ + '.png', this.pas_+1,this.pas_+1);
           this.perso_.gauche();  
       }
       //cas flèche droite
       else if(e.key=="ArrowRight"){
-        this.perso_.setImage('persod.png', this.pas_+1,this.pas_+1);
+        this.perso_.setImage('../www/assets/img/persod' + this.inv_ + '.png', this.pas_+1,this.pas_+1);
         this.perso_.droite();
       }
       //cas flèche haut
       else if(e.key=="ArrowUp"){
-        this.perso_.setImage('persoh.png', this.pas_+1,this.pas_+1);
+        this.perso_.setImage('../www/assets/img/persoh' + this.inv_ + '.png', this.pas_+1,this.pas_+1);
         this.perso_.haut();
       }
       //cas flèche bas
       else if(e.key=="ArrowDown"){
-        this.perso_.setImage('persob.png', this.pas_+1,this.pas_+1);
+        this.perso_.setImage('../www/assets/img/persob' + this.inv_ + '.png', this.pas_+1,this.pas_+1);
         this.perso_.bas();
       }
     }
@@ -201,51 +277,29 @@ class Scene extends Sprite {
   this.ajouter(this.score_);
   this.score_.setXY(0,-40);
 
-  
  }
 
   //-----------------------------------------------------------------------------------------méthodes
-
-  //méthode pour génération aléatoire de la map
-
-  // public randomAssets(){
-  //   for(let i : number = 0; i<this.lab_.length;i++){
-  //     for(let j : number = 0; j<this.lab_[i].length;j++){
-        
-  //       //this.lab_[i][j] = 
-  //     }
-  //   }
-  // }
-
-  //loi uniforme (continue) : retourne un entier entre 0 et max
-  public uniforme(max){
-    return Math.floor(Math.random() * max);
-  }
-
-  public bernouilli(level : number){
-    let rand : number = Math.random();
-    if(rand < level){
-        return true;
-    }else{
-        return false;
-    }
-}
-
-
-
   
   public detruirePastille(i: number, j : number){
    this.retirer(this.pastilles_[i][j]);
    this.pastilles_[i][j]=null;
    this.nbPastille_--;
-   this.scoreNb_++
+   this.scoreNb_++;
    this.score_.getBalise().innerHTML = "Score = "+this.scoreNb_;
    
   }
 
+  public detruireItem(i: number, j : number){
+    this.retirer(this.items_[i][j]);
+    this.items_[i][j]=null;
+    this.perso_.invincible(this.loiBeta(6, 12) * 10000 + 2000);
+   }
+
  //------------------------------------------------------------------------------------------arreter
  //on prend en paramètre les tableau des id d'intervalle et des méchants
  public arreter() {
+  this.retirer(this.score_);
    //suppression des méchants, intervales et pastilles
   for(let i : number = 0; i<this.mechants_.length;i++){
     for(let j : number = 0; j<this.mechants_.length;j++){
@@ -266,14 +320,18 @@ class Scene extends Sprite {
         //suppression du mur
         this.retirer(this.murs_[i][j]);
         this.murs_[i][j]=null;
-      }
+      }else if (this.lab_[i][j]==3){
+        //suppression des items
+        this.retirer(this.items_[i][j]);
+        this.items_[i][j]=null;
+    }
     }
   }
 
   //suppression du perso
   this.retirer(this.perso_);
   //Message de fin et relance du jeu
-  alert("Redémarrer ?");
+
 
   //suppression de l'event listener 
   window.removeEventListener("keydown",this.actionClavier_);
