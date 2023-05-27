@@ -4,13 +4,15 @@ class Perso extends Sprite {
     public ligne_ : number;
     public colonne_ : number;
     public mort_ : boolean;
+    public invincible_ : boolean;
 
     public constructor(balise : HTMLElement, scene : Scene, ligne : number, colonne : number){
         super(balise);
         this.scene_= scene;
         this.ligne_ = ligne;
         this.colonne_ = colonne;
-        this.mort_=false;
+        this.mort_ = false;
+        this.invincible_ = true;
     }
 
 
@@ -57,12 +59,20 @@ class Perso extends Sprite {
         return (this.ligne_==4 && this.colonne_==9);
     }
 
-    //mange pastille s'il y en a une
+    //mange pastille ou item s'il y en a
     
     public manger(){
-        if(this.scene_.pastilles_[this.ligne_][this.colonne_] != null) this.scene_.detruirePastille(this.ligne_, this.colonne_);
+        if(this.scene_.pastilles_[this.ligne_][this.colonne_] != null){
+            this.scene_.detruirePastille(this.ligne_, this.colonne_);
+        }
+        if(this.scene_.items_[this.ligne_][this.colonne_] != null){
+            this.scene_.detruireItem(this.ligne_, this.colonne_);
+        }
     }
 
-
+    public invincible(duree : number){
+        this.invincible_ = true;
+        setTimeout(() => {this.invincible_ = false;}, duree);
+    }
     
 }
