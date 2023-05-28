@@ -2,29 +2,47 @@
 class Scene extends Sprite {
  //----------------------------------------------------------------------------------------Attributs
  /* Attributs de la scene. */
+
  public lab_ : Array<Array<number>>;
  public pas_ : number;
  public perso_ : Perso;
  public actionClavier_ : any;
+ public chance_ : number;
+
+ // score
+ public score_ : Sprite;
+ public scoreNb_ : number;
+ public scoreAddVals_ : number[];
+
+ // assets
+ public murs_ : Array<Array<Sprite>>;
  public pastilles_ : Array<Array<Sprite>>;
  public nbPastille_ : number;
- public score_ : Sprite;
- public mechants_ : Array<Array<Mechant>>;
- public murs_ : Array<Array<Sprite>>;
- public scoreNb_ : number;
- public chance_ : number;
  public items_ : Array<Array<Sprite>>;
  public nbItems_ : number;
+
+ // ennemis
+ public mechants_ : Array<Array<Mechant>>;
  public nbMechants_ : number;
+
+ // invincibilité
  public timerInv_ : number;
  public inv_ : string;
+
+ // bg color
  public red_ : number;
  public green_ : number;
  public blue_ : number;
  public addRed_ : boolean;
  public addGreen_ : boolean;
  public addBlue_ : boolean;
+ public redVals_ : number[];
+ public greenVals_ : number[];
+ public blueVals_ : number[];
+ public timerColor_ : number;
 
+ // maths var
+ public variance_ : number;
 
  //-------------------------------------------------------------------------------------Constructeur
  public constructor(balise : HTMLElement) {
@@ -37,42 +55,52 @@ class Scene extends Sprite {
   this.nbItems_ =  2 + this.uniforme(4);
   // Détermination du nb d'ennemis entre 2 et 3
   this.nbMechants_ = 2 + this.uniforme(2);
+  // init data
   this.inv_ = '';
+  this.scoreAddVals_ = [];
+  //colors
   this.red_ = 0;
   this.green_ = 157;
   this.blue_ = 255;
   this.addRed_ = true;
   this.addGreen_ = true;
   this.addBlue_ = true;
+  this.blueVals_ = [];
+  this.redVals_ = [];
+  this.greenVals_ = [];
  }
 
-  //-----------------------------------------------------------------------------------------lois
-  public bernouilli(level : number){
-    let rand : number = Math.random();
-    if(rand < level){
-        return true;
-    }else{
-        return false;
-    }
- }
+//----------------------------------------------------------------------------------------- Méthodes
+// ~~~~~~~~~~~Lois mathématiques
 
-  //loi uniforme (continue) : retourne un entier entre 0 et max : determine le nb d'item
-  public uniforme(max : number){
-    return Math.floor(Math.random() * max);
+// Bernouilli
+public bernouilli(level : number){
+  let rand : number = Math.random();
+  if(rand < level){
+      return true;
+  }else{
+      return false;
   }
+}
 
-//retourne valeur entre 0 et 1
- public loiBeta(a : number, b : number){
+// Loi uniforme (continue) : retourne un entier entre 0 et max : determine le nb d'item
+public uniforme(max : number){
+  return Math.floor(Math.random() * max);
+}
+
+// Loi Beta : retourne valeur entre 0 et 1
+public loiBeta(a : number, b : number){
   let u = Math.random();
   let v = Math.random();
   while(Math.pow(u, 1/a), Math.pow(v, 1/b) > 1){
-     u = Math.random();
-     v = Math.random();
+    u = Math.random();
+    v = Math.random();
   }
   let res = (Math.pow(u, 1/a))/(Math.pow(u, 1/a) + Math.pow(v, 1/b));
   return res;
 }
 
+// Loi binomiale
 public binomiale(times : number, chances : number, nbToWin : number){
   let count = 0;
   for(let i = 0 ; i < times ; i++){
@@ -81,6 +109,7 @@ public binomiale(times : number, chances : number, nbToWin : number){
   if(count >= nbToWin){return true;}else{return false;};
 }
 
+// Loi géométrique
 public loiGeometrique(p : number) {
   if (p <= 0 || p >= 1) {
     return "Probability (p) must be greater than 0 and less than 1.";
@@ -92,10 +121,12 @@ public loiGeometrique(p : number) {
   return count;
 }
 
+// Loi exponentielle
 public loiExpo(lambda : number) {
   return -Math.log(1 - Math.random()) / lambda;
 }
 
+// Loi Poisson
 public loiPoisson(lambda : number) {
   const L = Math.exp(-lambda);
   let k = 0;
@@ -107,9 +138,33 @@ public loiPoisson(lambda : number) {
   return k - 1;
 }
 
-  //-----------------------------------------------------------------------------------------demarrer
+// ~~~~~~~~~~~ Calculs mathématiques
+
+// Moyenne
+public moyenne(valeurs : number[]){
+  let somme = 0;
+  valeurs.forEach((valeur) => {
+    somme += valeur;
+  })
+  return Math.floor((somme/valeurs.length) * 10)/10;
+}
+
+// Variance
+public variance(valeurs : number[]){
+  let varianceTab : number[] = [];
+  let nbElts = valeurs.length;
+  let moyenne = this.moyenne(valeurs);
+  for(let i = 0 ; i < nbElts ; i++){
+    varianceTab.push((valeurs[i] - moyenne)**2);
+  }
+  return this.moyenne(varianceTab);
+}
+
+//-----------------------------------------------------------------------------------------demarrer
  public demarrer() {
   document.getElementById("play").style.display = "none";
+  document.getElementById("scene").style.display = "block";
+  document.getElementById("end-screen").style.display = "none";
 
 
   this.lab_ = new Array<Array<number>>();
@@ -251,21 +306,26 @@ public loiPoisson(lambda : number) {
       }
   }
 
-  // loops
-  // skin perso invincible
+  // ~~~~~~~~~~~~~~~~~~~ loops
+
+  // ~~~~~~~~ skin perso invincible
   this.timerInv_ = setInterval(() => {
     if(this.perso_.invincible_ == true){
       this.inv_ = 'i';
     }
   },1000/5);
 
+  // ~~~~~~~~ background color
+
+  // var pour bg color
   let minRed : number;
   let maxRed : number;
   let maxBlue : number;
   let maxGreen : number;
-  
-  setInterval(() => {
 
+  this.timerColor_ = setInterval(() => {
+
+    // couleur tend vers le rouge moins il reste de pastilles
     if(this.nbPastille_ >= 15){
       minRed = 10;
       maxRed = 150;
@@ -289,26 +349,22 @@ public loiPoisson(lambda : number) {
     if(this.green_ > maxGreen) this.addGreen_ = false;
     else if(this.green_ <10) this.addGreen_ = true;
 
+    // valeur R, G, B s'incrémente ou se décremente d'une valeur aléatoire à chaque passage
     if(this.addRed_ == true) this.red_ +=this.loiPoisson(2.5);
     else this.red_ -=this.loiPoisson(2.5);
     if(this.addBlue_ == true) this.blue_ +=this.loiPoisson(2.5) 
     else this.blue_ -=this.loiPoisson(2.5);
     if(this.addGreen_ == true) this.green_ +=this.loiPoisson(2.5);
     else this.green_ -=this.loiPoisson(2.5);
-    let color = 'rgb(' + this.red_ + ',' + this.green_ + ',' + this.blue_ + ')';
-    // while(red != red + this.loiExpo(0.5) * 100){
-    //   red =+ this.loiExpo(0.5) * 100;
-    // }
-    document.documentElement.style.setProperty('--color', color);
 
-    // setInterval(() => {
-    //   let red =+ this.loiExpo(0.5) * 5;
-    //   let color = 'rgb(' + red + ',' + green + ',' + blue + ')';
-    //   document.documentElement.style.setProperty('--color', color);
-    // },1000);
-    console.log(color);
-    //document.documentElement.style.setProperty('--color', color);
-    // document.getElementById('background__gradient').setAttribute("style", "background-image: linear-gradient(90deg, "+color+","+color+")");
+    // sauv des valeurs de couleurs pour données finales
+    this.redVals_.push(this.red_);
+    this.greenVals_.push(this.green_);
+    this.blueVals_.push(this.blue_);
+
+    //création de la couleur rgb et application pour background
+    let color = 'rgb(' + this.red_ + ',' + this.green_ + ',' + this.blue_ + ')';
+    document.documentElement.style.setProperty('--color', color);
   },500);
 
   //réactions au touches directionnelles du clavier pour déplacer le personnage
@@ -340,15 +396,18 @@ public loiPoisson(lambda : number) {
     //On regarde si perso est à l'arrivée et a mangé toutes les pastilles
     if(this.perso_.estArrive() && this.nbPastille_==0){
       this.arreter();
-    }  
+    }else if(this.perso_.estArrive())  {
+      if(e.key=="ArrowLeft"){
+        this.perso_.setImage('../www/assets/img/persog' + this.inv_ + '.png', this.pas_+1,this.pas_+1);
+        this.perso_.gauche();  
+      }
+    }
   }
 
   //surveillance de l'évènement appui d'une touche du clavier
   window.addEventListener("keydown",this.actionClavier_);
 
-
   //affichage du score
-  
   this.score_ = new Sprite(document.createElement("div"));
   this.score_.getBalise().innerHTML = "Score = "+this.scoreNb_;
   this.score_.getBalise().id="score";
@@ -363,9 +422,11 @@ public loiPoisson(lambda : number) {
    this.retirer(this.pastilles_[i][j]);
    this.pastilles_[i][j]=null;
    this.nbPastille_--;
-   this.scoreNb_++;
+   let scoreAdd = this.loiExpo(2.5);
+   this.scoreAddVals_.push(scoreAdd);
+   this.scoreNb_+= 1 + scoreAdd;
+   this.scoreNb_ = Math.floor(this.scoreNb_ * 10)/10;
    this.score_.getBalise().innerHTML = "Score = "+this.scoreNb_;
-   
   }
 
   public detruireItem(i: number, j : number){
@@ -375,7 +436,6 @@ public loiPoisson(lambda : number) {
    }
 
  //------------------------------------------------------------------------------------------arreter
- //on prend en paramètre les tableau des id d'intervalle et des méchants
  public arreter() {
   this.retirer(this.score_);
    //suppression des méchants, intervales et pastilles
@@ -402,20 +462,49 @@ public loiPoisson(lambda : number) {
         //suppression des items
         this.retirer(this.items_[i][j]);
         this.items_[i][j]=null;
-    }
+      }
     }
   }
 
   //suppression du perso
   this.retirer(this.perso_);
-  //Message de fin et relance du jeu
-
+  
+  // cache scene, affiche bouton play
+  document.getElementById("scene").style.display = "none";
+  document.getElementById("play").style.display = "block";
+  document.getElementById("play").style.top = "80%";
 
   //suppression de l'event listener 
   window.removeEventListener("keydown",this.actionClavier_);
-  //redémarrage
-  this.demarrer();
+
+  //clear intervalle invincible et couleurs background 
+  clearInterval(this.timerInv_);
+  clearInterval(this.timerColor_);
+
+  // affichage data de fin de partie
+  this.endScreen();
  }
+
+ public endScreen(){
+  document.getElementById("end-screen").style.display = "block";
+
+  // end score
+  document.getElementById("score-final").innerHTML = this.scoreNb_.toString();
+
+  // color
+  let redMoy = this.moyenne(this.redVals_);
+  let greenMoy = this.moyenne(this.greenVals_);
+  let blueMoy = this.moyenne(this.blueVals_);
+  let color = 'rgb(' + redMoy + ',' + greenMoy + ',' + blueMoy + ')';
+  document.getElementById("col-moy-box").style.backgroundColor = color.toString();
+  document.getElementById("col-moy-text").innerHTML = color.toString();
+
+  // variance
+  document.getElementById("variance").innerHTML = this.variance(this.scoreAddVals_).toString();
+
+ }
+
+
 }
 
 // Fin //-------------------------------------------------------------------------------------------
