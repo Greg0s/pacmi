@@ -9,6 +9,7 @@ class Scene extends Sprite {
  public actionClavier_ : any;
  public chance_ : number;
  public timer_ : number;
+ public win_ : boolean;
 
  // score
  public score_ : Sprite;
@@ -71,6 +72,8 @@ class Scene extends Sprite {
   this.greenVals_ = [];
   //timer
   this.timer_ = 0;
+  // win?
+  this.win_ = false;
  }
 
 //----------------------------------------------------------------------------------------- Méthodes
@@ -404,6 +407,7 @@ public variance(valeurs : number[]){
     }
     //On regarde si perso est à l'arrivée et a mangé toutes les pastilles
     if(this.perso_.estArrive() && this.nbPastille_==0){
+      this.win_ = true;
       this.arreter();
     }else if(this.perso_.estArrive())  {
       if(e.key=="ArrowLeft"){
@@ -507,6 +511,13 @@ public variance(valeurs : number[]){
 
  public endScreen(){
   document.getElementById("end-screen").style.display = "block";
+
+  let msg : string;
+  if(this.win_) msg = 'Gagné !';
+  else msg = 'Perdu';
+
+  // win or lose msg
+  document.getElementById("end-msg").innerHTML = msg;
 
   // end score
   document.getElementById("score-final").innerHTML = this.scoreNb_.toString();

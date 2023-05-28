@@ -21,8 +21,6 @@ class Perso extends Sprite {
 
     public gauche(){
         if(this.scene_.lab_[this.ligne_][this.colonne_-1]!=1){
-            //this.scene_.lab_[this.ligne_][this.colonne_] = 0;
-            //this.scene_.lab_[this.ligne_][this.colonne_-1] = 8;
             this.colonne_ -= 1;
             this.setX(this.getX()-this.scene_.pas_);
         }

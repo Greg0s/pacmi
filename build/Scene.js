@@ -36,6 +36,7 @@ var Scene = (function (_super) {
         _this.redVals_ = [];
         _this.greenVals_ = [];
         _this.timer_ = 0;
+        _this.win_ = false;
         return _this;
     }
     Scene.prototype.bernoulli = function (level) {
@@ -323,6 +324,7 @@ var Scene = (function (_super) {
                 }
             }
             if (_this.perso_.estArrive() && _this.nbPastille_ == 0) {
+                _this.win_ = true;
                 _this.arreter();
             }
             else if (_this.perso_.estArrive()) {
@@ -396,6 +398,12 @@ var Scene = (function (_super) {
     };
     Scene.prototype.endScreen = function () {
         document.getElementById("end-screen").style.display = "block";
+        var msg;
+        if (this.win_)
+            msg = 'Gagné !';
+        else
+            msg = 'Perdu';
+        document.getElementById("end-msg").innerHTML = msg;
         document.getElementById("score-final").innerHTML = this.scoreNb_.toString();
         document.getElementById("timer").innerHTML = this.timer_.toString();
         var redMoy = this.moyenne(this.redVals_);
