@@ -35,6 +35,7 @@ var Scene = (function (_super) {
         _this.blueVals_ = [];
         _this.redVals_ = [];
         _this.greenVals_ = [];
+        _this.timer_ = 0;
         return _this;
     }
     Scene.prototype.bernoulli = function (level) {
@@ -124,6 +125,7 @@ var Scene = (function (_super) {
         document.getElementById("play").style.display = "none";
         document.getElementById("scene").style.display = "block";
         document.getElementById("end-screen").style.display = "none";
+        this.startTimer();
         this.lab_ = new Array();
         this.lab_[0] = new Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
         this.lab_[1] = new Array(1, 2, 8, 2, 1, 1, 2, 2, 10, 1);
@@ -352,7 +354,14 @@ var Scene = (function (_super) {
         this.items_[i][j] = null;
         this.perso_.invincible(this.loiBeta(6, 12) * 10000 + 2000);
     };
+    Scene.prototype.startTimer = function () {
+        this.timer_ = Date.now();
+    };
+    Scene.prototype.stopTimer = function () {
+        this.timer_ = Math.floor(Date.now() - this.timer_) / 1000;
+    };
     Scene.prototype.arreter = function () {
+        this.stopTimer();
         this.retirer(this.score_);
         for (var i = 0; i < this.mechants_.length; i++) {
             for (var j = 0; j < this.mechants_.length; j++) {
@@ -388,6 +397,7 @@ var Scene = (function (_super) {
     Scene.prototype.endScreen = function () {
         document.getElementById("end-screen").style.display = "block";
         document.getElementById("score-final").innerHTML = this.scoreNb_.toString();
+        document.getElementById("timer").innerHTML = this.timer_.toString();
         var redMoy = this.moyenne(this.redVals_);
         var greenMoy = this.moyenne(this.greenVals_);
         var blueMoy = this.moyenne(this.blueVals_);

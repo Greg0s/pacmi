@@ -8,6 +8,7 @@ class Scene extends Sprite {
  public perso_ : Perso;
  public actionClavier_ : any;
  public chance_ : number;
+ public timer_ : number;
 
  // score
  public score_ : Sprite;
@@ -68,6 +69,8 @@ class Scene extends Sprite {
   this.blueVals_ = [];
   this.redVals_ = [];
   this.greenVals_ = [];
+  //timer
+  this.timer_ = 0;
  }
 
 //----------------------------------------------------------------------------------------- Méthodes
@@ -171,6 +174,7 @@ public variance(valeurs : number[]){
   document.getElementById("scene").style.display = "block";
   document.getElementById("end-screen").style.display = "none";
 
+  this.startTimer();
 
   this.lab_ = new Array<Array<number>>();
 
@@ -438,10 +442,21 @@ public variance(valeurs : number[]){
     this.retirer(this.items_[i][j]);
     this.items_[i][j]=null;
     this.perso_.invincible(this.loiBeta(6, 12) * 10000 + 2000);
-   }
+  }
+
+  public startTimer(){
+    this.timer_ = Date.now();
+  }
+
+  public stopTimer(){
+    this.timer_ = Math.floor(Date.now() - this.timer_) / 1000;
+  }
 
  //------------------------------------------------------------------------------------------arreter
  public arreter() {
+
+  this.stopTimer();
+
   this.retirer(this.score_);
    //suppression des méchants, intervales et pastilles
   for(let i : number = 0; i<this.mechants_.length;i++){
@@ -495,6 +510,9 @@ public variance(valeurs : number[]){
 
   // end score
   document.getElementById("score-final").innerHTML = this.scoreNb_.toString();
+
+  // timer
+  document.getElementById("timer").innerHTML = this.timer_.toString();
 
   // color
   let redMoy = this.moyenne(this.redVals_);
