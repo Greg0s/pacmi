@@ -57,6 +57,34 @@ footer{
     transition: all 0.2s ease;
 }
 
+#end-screen{
+  display: none;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+}
+
+/* #end-screen ul{
+  list-style: none;
+}
+*/
+
+#end-screen ul li{
+  margin-bottom: 0.3rem;
+}
+
+#col-moy-box{
+  display: block;
+  background-color: rgb(1,1,1);
+}
+
+#col-moy-text{
+  display: absolute;
+  color: black;
+}
+
 .background {
     position: absolute;
     height: 100vh;
@@ -172,4 +200,13 @@ footer{
     100% {
       transform: translate(0, -1vh);
     }
+  }
+
+  #easter-egg{
+    display: block;
+    position: absolute;
+    left: -200px;
+    width: 150px;
+    height: 50px;
+    z-index: 3;
   }
