@@ -1,5 +1,5 @@
 # tsc -p tsconfig.json
 
-/build
+# /build
 settings.json
 /node_modules
