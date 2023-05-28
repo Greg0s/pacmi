@@ -73,8 +73,8 @@ class Scene extends Sprite {
 //----------------------------------------------------------------------------------------- Méthodes
 // ~~~~~~~~~~~Lois mathématiques
 
-// Bernouilli
-public bernouilli(level : number){
+// bernoulli
+public bernoulli(level : number){
   let rand : number = Math.random();
   if(rand < level){
       return true;
@@ -104,7 +104,7 @@ public loiBeta(a : number, b : number){
 public binomiale(times : number, chances : number, nbToWin : number){
   let count = 0;
   for(let i = 0 ; i < times ; i++){
-      if (this.bernouilli(chances)){(count++)};
+      if (this.bernoulli(chances)){(count++)};
   }
   if(count >= nbToWin){return true;}else{return false;};
 }
@@ -115,7 +115,7 @@ public loiGeometrique(p : number) {
     return "Probability (p) must be greater than 0 and less than 1.";
   }
   let count = 1;
-  while (this.bernouilli(p)) {
+  while (this.bernoulli(p)) {
     count++;
   }
   return count;

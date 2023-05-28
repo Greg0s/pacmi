@@ -81,7 +81,7 @@ class Mechant extends Perso{
       }
      
       //cas où méchant se dirige vers perso
-      if(this.scene_.bernouilli(this.scene_.chance_)){
+      if(this.scene_.bernoulli(this.scene_.chance_)){
          this.versJoueur();
       }
       //
