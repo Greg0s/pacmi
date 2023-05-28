@@ -151,13 +151,18 @@ public moyenne(valeurs : number[]){
 
 // Variance
 public variance(valeurs : number[]){
-  let varianceTab : number[] = [];
   let nbElts = valeurs.length;
-  let moyenne = this.moyenne(valeurs);
-  for(let i = 0 ; i < nbElts ; i++){
-    varianceTab.push((valeurs[i] - moyenne)**2);
+  if(nbElts > 0){
+    let varianceTab : number[] = [];
+    let moyenne = this.moyenne(valeurs);
+    for(let i = 0 ; i < nbElts ; i++){
+      varianceTab.push((valeurs[i] - moyenne)**2);
+    }
+    return this.moyenne(varianceTab);
+  }else{
+    return 0;
   }
-  return this.moyenne(varianceTab);
+
 }
 
 //-----------------------------------------------------------------------------------------demarrer
