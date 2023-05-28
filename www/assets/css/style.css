@@ -66,6 +66,10 @@ footer{
   color: white;
 }
 
+#end-screen h1{
+  text-align: center;
+}
+
 /* #end-screen ul{
   list-style: none;
 }
