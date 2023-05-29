@@ -450,7 +450,7 @@ public variance(valeurs : number[]){
   public detruireItem(i: number, j : number){
     this.retirer(this.items_[i][j]);
     this.items_[i][j]=null;
-    this.perso_.invincible(this.loiBeta(6, 12) * 10000 + 2000);
+    this.perso_.invincible(this.loiBeta(6, 12) * 8000 + 2000);
   }
 
   public startTimer(){

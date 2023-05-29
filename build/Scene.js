@@ -358,7 +358,7 @@ var Scene = (function (_super) {
     Scene.prototype.detruireItem = function (i, j) {
         this.retirer(this.items_[i][j]);
         this.items_[i][j] = null;
-        this.perso_.invincible(this.loiBeta(6, 12) * 10000 + 2000);
+        this.perso_.invincible(this.loiBeta(6, 12) * 8000 + 2000);
     };
     Scene.prototype.startTimer = function () {
         this.timer_ = Date.now();
