@@ -84,7 +84,6 @@ class Mechant extends Perso{
       if(this.scene_.bernoulli(this.scene_.chance_)){
          this.versJoueur();
       }
-      //
       else if(this.id_ % 2 == 0){
          if(this.scene_.binomiale(4, 0.17, 1)) this.versJoueur();
          else this.versRandom();
