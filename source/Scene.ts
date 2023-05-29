@@ -435,15 +435,14 @@ public variance(valeurs : number[]){
    this.retirer(this.pastilles_[i][j]);
    this.pastilles_[i][j]=null;
    this.nbPastille_--;
-   // score, par pastille = 1 + X (loi expo) + valeur entre 30 et 0 qui baisse avec le temps
-   let timeParam = 0;
-   if(Math.floor(Date.now() - this.timer_) / 1000 < 30){
-    timeParam = 30 - (Math.floor(Date.now() - this.timer_) / 1000);
+   // score, par pastille = 1 + X (loi expo) / temps de jeu
+   let timeParam = 1;
+   if(Math.floor(Date.now() - this.timer_) / 1000 >= 1){
+    timeParam = Math.floor(Date.now() - this.timer_) / 1000;
    }
-   let scoreAdd = this.loiExpo(2.5) + timeParam;
-   console.log(scoreAdd);
+   let scoreAdd = this.loiExpo(0.4);
    this.scoreAddVals_.push(scoreAdd);
-   this.scoreNb_+= 1 + scoreAdd;
+   this.scoreNb_+= 1 + scoreAdd / timeParam;
    this.scoreNb_ = Math.floor(this.scoreNb_ * 10)/10;
    this.score_.getBalise().innerHTML = "Score = "+this.scoreNb_;
   }

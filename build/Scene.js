@@ -345,14 +345,13 @@ var Scene = (function (_super) {
         this.retirer(this.pastilles_[i][j]);
         this.pastilles_[i][j] = null;
         this.nbPastille_--;
-        var timeParam = 0;
-        if (Math.floor(Date.now() - this.timer_) / 1000 < 30) {
-            timeParam = 30 - (Math.floor(Date.now() - this.timer_) / 1000);
+        var timeParam = 1;
+        if (Math.floor(Date.now() - this.timer_) / 1000 >= 1) {
+            timeParam = Math.floor(Date.now() - this.timer_) / 1000;
         }
-        var scoreAdd = this.loiExpo(2.5) + timeParam;
-        console.log(scoreAdd);
+        var scoreAdd = this.loiExpo(0.4);
         this.scoreAddVals_.push(scoreAdd);
-        this.scoreNb_ += 1 + scoreAdd;
+        this.scoreNb_ += 1 + scoreAdd / timeParam;
         this.scoreNb_ = Math.floor(this.scoreNb_ * 10) / 10;
         this.score_.getBalise().innerHTML = "Score = " + this.scoreNb_;
     };
