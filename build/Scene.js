@@ -263,13 +263,13 @@ var Scene = (function (_super) {
                 maxBlue = 250;
                 maxGreen = 250;
             }
-            else if (_this.nbPastille_ < 15) {
+            else if (_this.nbPastille_ < 15 && _this.nbPastille_ > 7) {
                 minRed = 125;
                 maxRed = 250;
                 maxBlue = 150;
                 maxGreen = 150;
             }
-            else if (_this.nbPastille_ < 7) {
+            else if (_this.nbPastille_ <= 7) {
                 minRed = 230;
                 maxBlue = 50;
                 maxGreen = 50;
@@ -345,7 +345,12 @@ var Scene = (function (_super) {
         this.retirer(this.pastilles_[i][j]);
         this.pastilles_[i][j] = null;
         this.nbPastille_--;
-        var scoreAdd = this.loiExpo(2.5);
+        var timeParam = 0;
+        if (Math.floor(Date.now() - this.timer_) / 1000 < 30) {
+            timeParam = 30 - (Math.floor(Date.now() - this.timer_) / 1000);
+        }
+        var scoreAdd = this.loiExpo(2.5) + timeParam;
+        console.log(scoreAdd);
         this.scoreAddVals_.push(scoreAdd);
         this.scoreNb_ += 1 + scoreAdd;
         this.scoreNb_ = Math.floor(this.scoreNb_ * 10) / 10;

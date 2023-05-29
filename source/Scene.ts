@@ -343,12 +343,12 @@ public variance(valeurs : number[]){
       maxRed = 150;
       maxBlue = 250;
       maxGreen = 250;
-    }else if(this.nbPastille_ < 15){
+    }else if(this.nbPastille_ < 15 && this.nbPastille_ > 7){
       minRed = 125;
       maxRed = 250;
       maxBlue = 150;
       maxGreen = 150;
-    }else if(this.nbPastille_ < 7){
+    }else if(this.nbPastille_ <= 7){
       minRed = 230;
       maxBlue = 50;
       maxGreen = 50;
@@ -435,7 +435,13 @@ public variance(valeurs : number[]){
    this.retirer(this.pastilles_[i][j]);
    this.pastilles_[i][j]=null;
    this.nbPastille_--;
-   let scoreAdd = this.loiExpo(2.5);
+   // score, par pastille = 1 + X (loi expo) + valeur entre 30 et 0 qui baisse avec le temps
+   let timeParam = 0;
+   if(Math.floor(Date.now() - this.timer_) / 1000 < 30){
+    timeParam = 30 - (Math.floor(Date.now() - this.timer_) / 1000);
+   }
+   let scoreAdd = this.loiExpo(2.5) + timeParam;
+   console.log(scoreAdd);
    this.scoreAddVals_.push(scoreAdd);
    this.scoreNb_+= 1 + scoreAdd;
    this.scoreNb_ = Math.floor(this.scoreNb_ * 10)/10;
