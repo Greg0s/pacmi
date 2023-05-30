@@ -349,7 +349,7 @@ var Scene = (function (_super) {
         if (Math.floor(Date.now() - this.timer_) / 1000 >= 1) {
             timeParam = Math.floor(Date.now() - this.timer_) / 1000;
         }
-        var scoreAdd = this.loiExpo(0.4);
+        var scoreAdd = this.loiExpo(0.6);
         this.scoreAddVals_.push(scoreAdd);
         this.scoreNb_ += 1 + scoreAdd / timeParam;
         this.scoreNb_ = Math.floor(this.scoreNb_ * 10) / 10;
