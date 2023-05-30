@@ -67,7 +67,11 @@ var Perso = (function (_super) {
     Perso.prototype.invincible = function (duree) {
         var _this = this;
         this.invincible_ = true;
-        setTimeout(function () { _this.invincible_ = false; }, duree);
+        this.scene_.inv_ = 'i';
+        setTimeout(function () {
+            _this.invincible_ = false;
+            _this.scene_.inv_ = '';
+        }, duree);
     };
     return Perso;
 }(Sprite));

@@ -320,13 +320,6 @@ public variance(valeurs : number[]){
 
   // ~~~~~~~~~~~~~~~~~~~ loops
 
-  // ~~~~~~~~ skin perso invincible
-  this.timerInv_ = setInterval(() => {
-    if(this.perso_.invincible_ == true){
-      this.inv_ = 'i';
-    }
-  },1000/5);
-
   // ~~~~~~~~ background color
 
   // var pour bg color

@@ -70,7 +70,11 @@ class Perso extends Sprite {
 
     public invincible(duree : number){
         this.invincible_ = true;
-        setTimeout(() => {this.invincible_ = false;}, duree);
+        this.scene_.inv_ = 'i';
+        setTimeout(() => {
+            this.invincible_ = false;
+            this.scene_.inv_ = '';
+        }, duree);
     }
     
 }

@@ -247,11 +247,6 @@ var Scene = (function (_super) {
                 _loop_1(j);
             }
         }
-        this.timerInv_ = setInterval(function () {
-            if (_this.perso_.invincible_ == true) {
-                _this.inv_ = 'i';
-            }
-        }, 1000 / 5);
         var minRed;
         var maxRed;
         var maxBlue;
